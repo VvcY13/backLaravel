@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -44,17 +46,10 @@ class productosController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request)
     {
-        $validatedData = $request->validate([
-            'nombreProd' => 'required|string|max:255',
-            'marcaProd' => 'required|string|max:255',
-            'presentacionProd' => 'required|string|max:255',
-            'precioCompraProd' => 'required|numeric',
-            'precioVentaProd' => 'required|numeric',
-            'stockProd' => 'required|numeric',
-            'imagenProd' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        $validatedData = $request->validated();
+
         $producto = new Product();
         $producto->nombreProd = $validatedData['nombreProd'];
         $producto->marcaProd = $validatedData['marcaProd'];
@@ -91,17 +86,9 @@ class productosController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(ProductUpdateRequest $request, $id)
     {
-        $validatedData = $request->validate([
-            'nombreProd' => 'required|string|max:255',
-            'marcaProd' => 'required|string|max:255',
-            'presentacionProd' => 'required|string|max:255',
-            'precioCompraProd' => 'required|numeric',
-            'precioVentaProd' => 'required|numeric',
-            'stockProd' => 'required|numeric',
-            'imagenProd' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        $validatedData = $request->validated();
     
         $producto = Product::findOrFail($id);
         $producto->nombreProd = $validatedData['nombreProd'];

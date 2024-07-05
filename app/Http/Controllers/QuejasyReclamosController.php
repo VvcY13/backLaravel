@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\QuejasCreateRequest;
 use App\Models\QuejasyReclamos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,14 +15,11 @@ class QuejasyReclamosController extends Controller
         $quejasyreclamos = QuejasyReclamos::all();
         return response()->json(['message' => 'quejasyreclamos', 'quejasyreclamos' => $quejasyreclamos], 200);
     }
-    public function create(Request $request)
+    public function create(QuejasCreateRequest $request)
     {
         try {
-            $validatedData = $request->validate([
-                'id_personal' => 'required|exists:users,id',
-                'asunto' => 'required|in:Quejas,Sugerencias,Opiniones',
-                'comentario' => 'required|string|max:255'
-            ]);
+            $validatedData = $request->validated();
+            
             Log::info('Datos recibidos', $validatedData);
             $quejasyreclamos = new QuejasyReclamos();
             $quejasyreclamos->id_personal = $validatedData['id_personal'];

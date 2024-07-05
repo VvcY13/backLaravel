@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserLoginRequest;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,23 +28,10 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create(UserStoreRequest $request)
     {
-        $validatedData = $request->validate([
-            'nombres' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'email' => 'required|string|max:255',
-            'password' => 'required|string|min:8',
-            'direccion' => 'required|string|max:255',
-            'provincia' => 'required|string|max:255',
-            'distrito' => 'required|string|max:255',
-            'tipo_documento' => 'required|in:tipo_documento,DNI,Carnet_Extranjeria',
-            'numero_documento' => 'required|string|max:255',
-
-        ]);
-
-
-
+        $validatedData = $request->validated();
+        
         $user = new User();
         $user->nombres = $validatedData['nombres'];
         $user->apellidos = $validatedData['apellidos'];
@@ -89,35 +79,24 @@ class UserController extends Controller
 
 
    
-    public function update(Request $request, $id)
+    public function update(UserUpdateRequest $request, $id)
     {
-        $validatedData = $request->validate([
-            'nombres' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'email' => 'required|string|max:255',
-            'password' => 'required|string|max:255',
-            'direccion' => 'required|string|max:255',
-            'provincia' => 'required|string|max:255',
-            'distrito' => 'required|string|max:255',
-            'tipo_documento' => 'required|in:tipo_documento,DNI,Carnet_Extranjeria',
-            'numero_documento' => 'required|string|max:255',
-        ]);
-
+        $validatedData = $request->validated();
         
         $user = User::findOrFail($id);
-
         
+        $user = User::findOrFail($id);
         $user->nombres = $validatedData['nombres'];
         $user->apellidos = $validatedData['apellidos'];
         $user->email = $validatedData['email'];
-        $user->password = Hash::make($validatedData['password']);
+        if (isset($validatedData['password'])) {
+            $user->password = Hash::make($validatedData['password']);
+        }
         $user->direccion = $validatedData['direccion'];
         $user->provincia = $validatedData['provincia'];
         $user->distrito = $validatedData['distrito'];
         $user->tipo_documento = $validatedData['tipo_documento'];
         $user->numero_documento = $validatedData['numero_documento'];
-
-        
         $user->save();
 
         $token = JWTAuth::fromUser($user);
@@ -140,7 +119,7 @@ class UserController extends Controller
         return response()->json(['message' => 'Usuario eliminado correctamente']);
         
     }
-    public function login(Request $request)
+    public function login(UserLoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
         
